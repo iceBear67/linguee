@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'io.ib67.bukkit'
+version '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
+    implementation 'com.github.InlinedLambdas:Kiwi:60d5b98f6a'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+}
+
+test {
+    useJUnitPlatform()
+}
