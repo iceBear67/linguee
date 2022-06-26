@@ -1,6 +1,6 @@
 # Linguee
 
-Text Processing solution which alternatives to Adventure API.
+[Text](./api/src/main/java/io/ib67/bukkit/chat/Text.java) Processing solution which alternatives to Adventure API.
 
 # Features
 
