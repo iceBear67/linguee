@@ -7,6 +7,12 @@ version = '0.1.0'
 
 allprojects {
     afterEvaluate {
+        dependencies {
+            compileOnly 'com.github.InlinedLambdas:Kiwi:60d5b98f6a'
+            compileOnly 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
+            runtimeClasspath 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
+            compileOnly 'org.jetbrains:annotations:23.0.0'
+        }
         repositories {
             mavenCentral()
             maven {
