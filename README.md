@@ -12,9 +12,9 @@ Linguee supports old-fashion chat color style in Minecraft.
 
 `&a Green &b Aqua &c Red &r Reset ....`
 
-we also support gradient colors.
+we also support operators like `gradient`.
 
-`&<gr:aqua-0xFFFF>Texts which are colored from aqua to red`
+`&&lt;gr:aqua-0xFFFF>Texts which are colored from aqua to red`
 
 ## In-Text DSL
 
@@ -47,7 +47,7 @@ class MyLanguageRecord {
 
 //...
 
-assert record.noItemRepresent=="There are no items.";
+assert record.noItemRepresent.str() == "There are no items.";
 ```
 
 ## Templates
