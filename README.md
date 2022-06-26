@@ -53,9 +53,9 @@ assert record.noItemRepresent.str() == "There are no items.";
 
 ## Templates
 
-You can put placeholders into your texts.
+You can put placeholders into your texts, with pollution-proof
 
-`I think {{name}} is abusing his sword.` -> (With `{name = "nullcat_"}`) `I think nullcat_ is abusing his sword.`
+`I think {{name}} is abusing his sword.` -> (With `{name = "&bnullcat_"}`) `I think &bnullcat_&r is abusing his sword.`
 
 ### Integrations
 
