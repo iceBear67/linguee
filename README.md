@@ -20,7 +20,8 @@ we also support operators like `gradient`.
 
 Similar to Markdown.
 
-`You can click this [link](....) for help.` -> `You can click this &nlink&r for help.` (clickable)
+`You can click this [link](/help) for help.` -> `You can click this &nlink&r for help.` (clickable, url is also
+supported.)
 
 ``Use a `Sticky Wand` to attack them!`` -> `Use a &oSticky Wand&r to attack them!`
 
