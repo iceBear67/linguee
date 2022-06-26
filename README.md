@@ -14,7 +14,7 @@ Linguee supports old-fashion chat color style in Minecraft.
 
 we also support operators like `gradient`.
 
-`&&lt;gr:aqua-0xFFFF>Texts which are colored from aqua to red`
+`&<gr:aqua-0xFFFF>Texts which are colored from aqua to red`
 
 ## In-Text DSL
 
@@ -36,7 +36,7 @@ With a themed text, you can focus on what you should emphasize to players instea
 
 ## Localization
 
-A type-safe localization is so easy.
+type-safe localization so easy.
 
 ```java
 import io.ib67.bukkit.chat.i10n.Localized;
