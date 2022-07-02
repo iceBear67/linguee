@@ -20,9 +20,13 @@ public abstract class MDToken<T> {
 
     @Override
     public String toString() {
-        return "MDToken{" +
-                "data=" + data +
-                ", type=" + type +
-                '}';
+        return type + (data == null || (data instanceof CharSequence s && s.toString().isEmpty()) ? "" : " -> " + data);
+    }
+
+    public static abstract class Flag extends MDToken<Flag> {
+
+        protected Flag(TokenType type) {
+            super(null, type);
+        }
     }
 }

@@ -1,15 +1,12 @@
 package io.ib67.bukkit.mcup;
 
 import io.ib67.bukkit.mcup.token.*;
-import net.md_5.bungee.api.ChatColor;
-import org.inlambda.kiwi.Kiwi;
 
 import java.util.Stack;
 
 public final class DSLCompiler {
     private int i = 0;
     private StringBuilder collector = new StringBuilder();
-    private Stack<TokenType> mode = new Stack<>();
     private Stack<MDToken<?>> tokens = new Stack<>();
 
     public DSLCompiler() {
@@ -19,7 +16,7 @@ public final class DSLCompiler {
     public static void main(String[] args) {
         var compiler = new DSLCompiler();
         compiler.toTokenStream("""
-                &a*aa[Hello! [Your *NAME*\\] ](https://github.cpm)*
+                **bold text***italic text* [TextData](/command)
                 """.trim()).stream().forEach(System.out::println);
     }
 
@@ -32,174 +29,99 @@ public final class DSLCompiler {
 
     public Stack<MDToken<?>> toTokenStream(String text) {
         var chars = text.toCharArray();
-        boolean escaping = false;
-        mode.push(TokenType.PLAIN);
+        var escape = false;
 
-        String display = null;
-        String url;
-        boolean urlPhase = false;
-
-        int itali_start = -1;
-        for (i = 0; i < chars.length; i++) {
-            var eof = i == chars.length - 1;
+        boolean link = false;
+        boolean display = false;
+        String displayT = null;
+        for (int i = 0; i < chars.length; i++) {
             var now = chars[i];
-            var hasLast = i > 0;
-            var last = hasLast ? chars[i - 1] : ' ';
             var hasNext = i < chars.length - 1;
             var next = hasNext ? chars[i + 1] : ' ';
-            if (escaping) {
+            var hasLast = i != 0;
+            var last = hasLast ? chars[i - 1] : ' ';
+            if (escape) {
                 collector.append(now);
-                escaping = false;
                 continue;
             }
             switch (now) {
                 case '\\':
-                    escaping = true;
-                    break;
+                    escape = true;
+                    continue;
                 case '*':
-                    if (mode.peek() == TokenType.LINK) {
-                        collector.append('*');
-                        break;
+                    if (display || link) {
+                        collector.append(now);
+                        continue;
                     }
-                    if (mode.peek() == TokenType.ITALIC) {
-                        // end of this italic.
-                        mode.pop();
-                        var result = getAndCleanResult();
-                        if (result.isEmpty()) { // Sit: ** -> Bold.
-                            // can be a link or something above..
-                            if (i - itali_start > 1) {
-                                // it's a link or color. and we 're end
-                                tokens.push(new Italic(result));
-                            } else {
-                                mode.push(TokenType.BOLD); // enter BOLD mode.
-                            }
-                        } else {
-                            tokens.push(new Italic(result));
-                        }
-                        break;
-                    } else if (mode.peek() == TokenType.BOLD) {
-                        if (hasNext && next == '*') {
-                            mode.pop();
-                            // end this bold.
-                            tokens.push(new Bold(getAndCleanResult()));
-                            i++; // skip next *
-                        } else { // ** a * <- or ** *<-a* **
-                            if (eof) {
-                                collector.append(now);
-                                tokens.push(new Bold(getAndCleanResult()));
-                                mode.pop();
-                            } else {
-                                tokens.push(new Bold(getAndCleanResult()));
-                                mode.push(TokenType.ITALIC);
-                            }
-                        }
-                        break;
+                    if (hasNext && next == '*') { // look forward: **
+                        // bold mode.
+                        i++; // move pointer
+                        saveLit();
+                        lastOrPush(Bold.BEGIN, Bold.END);
                     } else {
-                        // save lasts
-                        //   tokens.push(new Plain(getAndCleanResult()));
-                        saveLast();
-                        //mode.pop();
-                        mode.push(TokenType.ITALIC);
-                        itali_start = i;
-                        break;
-                    }
-                case '`':
-                    if (mode.peek() == TokenType.LINK) {
-                        collector.append('`');
-                        break;
-                    }
-                    if (mode.peek() == TokenType.QUOTE) {
-                        // end.
-                        mode.pop();
-                        tokens.push(new Quote(getAndCleanResult()));
-                    } else {
-                        // save lasts
-                        tokens.push(new Plain(getAndCleanResult()));
-                        // start.
-                        mode.push(TokenType.QUOTE);
+                        saveLit();
+                        lastOrPush(Italic.BEGIN, Italic.END);
                     }
                     break;
                 case '[':
-                    if (mode.peek() != TokenType.LINK) {
-                        saveLast();
-                        mode.push(TokenType.LINK);
-                        break;
-                    } // left it to default
-                    collector.append(now);
+                    if (display) {
+                        collector.append(now);
+                    } else {
+                        // suspect it.
+                        saveLit();
+                        display = true;
+                    }
                     break;
                 case ']':
-                    if (mode.peek() == TokenType.LINK) {
+                    if (display) {
+                        // in display mode and capt.
                         if (hasNext && next == '(') {
-                            display = getAndCleanResult();
-                        } else { // not a [XX]() -> save as [XX]
-                            mode.pop(); // back.
-                            collector.insert(0, '[');
-                            collector.append(']');
-                            saveLast();
-                            break;
+                            link = true;
+                            i++; // skip (
+                            displayT = collector.toString();
+                            collector.setLength(0);
                         }
                         break;
+                    } else {
+                        collector.append(now);
                     }
-                    collector.append(now);
-                    break;
-                // left it to default
-                case '(':
-                    if (mode.peek() == TokenType.LINK) {
-                        // load as URL.
-                        urlPhase = true;
-                        break;
-                    } // else: default
-                    collector.append(now);
                     break;
                 case ')':
-                    if (mode.peek() == TokenType.LINK && urlPhase) {
-                        urlPhase = false;
-                        url = getAndCleanResult();
-                        mode.pop();
-                        // clone stack.
-                        var stack = new Stack<TokenType>();
-                        stack.addAll(mode);
-                        tokens.push(new Link(new Link.LinkData(display, url, stack), TokenType.LINK));
-                        break;
+                    if (link) {
+                        var url = collector.toString();
+                        collector.setLength(0);
+                        tokens.push(new Link(new LinkData(new DSLCompiler().toTokenStream(displayT), url)));
+                    } else {
+                        collector.append(now);
                     }
-                    break;
-                case '&':
-                    if (hasNext) {
-                        if (next == '<') {
-                            Kiwi.todo("Colour DSL");
-                        } else {
-                            i++;
-                            tokens.push(new ColorBegin(new ColorBegin.ColorData(ChatColor.getByChar(next))));
-                        }
-                        break;
-                    }
-                    collector.append(now);
                     break;
                 default:
                     collector.append(now);
             }
         }
-        saveLast();
-        {
-            var it = tokens.iterator();
-            while (it.hasNext()) {
-                var p = it.next();
-                if (p.data instanceof String s && s.isEmpty()) {
-                    it.remove();
-                }
-            }
-        }
+        saveLit();
         return tokens;
     }
 
-    private void saveLast() {
-        tokens.push(switch (mode.peek()) {
-            case ITALIC -> new Italic(orDefault(getAndCleanResult(), "*")); // a * on the end.
-            case BOLD -> new Bold(orDefault(getAndCleanResult(), "**"));
-            case QUOTE -> new Quote(orDefault(getAndCleanResult(), "`"));
-            case LINK, COLOR_BEGIN -> throw new IllegalStateException("Unexcepted End of File");
-            case PLAIN -> new Plain(getAndCleanResult());
-        });
+    private void saveLit() {
+        var lit = collector.toString();
+        collector.setLength(0);
+        tokens.push(new Literal(lit));
+    }
+
+    private void lastOrPush(MDToken<?> a, MDToken<?> b) {
+        for (int i1 = tokens.size() - 1; i1 >= 0; i1--) {
+            var tk = tokens.get(i1);
+            if (tk == b) {
+                // B E <-
+                tokens.push(a);
+                return;
+            } else if (tk == a) {
+                tokens.push(b);
+                return;
+            }
+        }
+        tokens.push(a);
     }
 
     private String getAndCleanResult() {
