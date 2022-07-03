@@ -1,0 +1,3 @@
+name: TestLinguee
+main: io.ib67.chat.LingTest
+version: 0.1

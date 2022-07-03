@@ -17,6 +17,10 @@ public sealed abstract class ClientClickAction implements ClickAction {
         throw new AssertionError("This should not be called");
     }
 
+    public String getValue() {
+        return value;
+    }
+
     /**
      * Executes a command.
      */

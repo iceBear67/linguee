@@ -1,18 +1,22 @@
 package io.ib67.bukkit.chat;
 
 import io.ib67.bukkit.chat.action.client.ClientHoverAction;
+import io.ib67.bukkit.chatimpl.SpigotText;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.inlambda.kiwi.Kiwi.todo;
 
 /**
- * Text is the core concept in Project Linguee, which represents an <strong>immutable</strong> object that holds information for player.<br>
+ * Text is the core concept in Project Linguee, which represents an <strong>immutable (for text)</strong> object that holds information for player.<br>
  * <h1>## Compilation</h1><br>
  * Linguee Texts supports Built-In DSLs for expressive text representations. We will compile them when we're creating a Text.({@link #of(String...)})<br>
  * For further information, refer to online documentation.
@@ -36,7 +40,7 @@ public interface Text {
      * @return compiled text
      */
     static Text of(@NotNull String... text) {
-        return todo();
+        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), true);
     }
 
     /**
@@ -46,7 +50,7 @@ public interface Text {
      * @return text
      */
     static Text ofRaw(@NotNull String... text) {
-        return todo();
+        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), false);
     }
 
     /**
@@ -56,7 +60,7 @@ public interface Text {
      * @return compiled text
      */
     static Text ofLines(String... text) {
-        return todo();
+        return of(Arrays.stream(text).collect(Collectors.joining("\n")));
     }
 
     /**
@@ -66,7 +70,7 @@ public interface Text {
      * @return
      */
     static Text ofLinesRaw(String... text) {
-        return todo();
+        return ofRaw(Arrays.stream(text).collect(Collectors.joining("\n")));
     }
 
     /**
@@ -108,6 +112,13 @@ public interface Text {
      */
     void send(@NotNull CommandSender sender, @NotNull Function<String, Object> placeholderMapper, int delay);
 
+    /**
+     * Render the output.
+     *
+     * @param placeholderMapper a function which maps placeholder names to value.
+     * @return renderer result
+     */
+    BaseComponent[] render(@NotNull Function<String, Object> placeholderMapper);
 
     // OVERLOADS - CONCAT
 
