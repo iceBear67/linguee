@@ -4,31 +4,27 @@ import io.ib67.bukkit.mcup.token.*;
 
 import java.util.Stack;
 
-public final class DSLCompiler {
-    private int i = 0;
-    private StringBuilder collector = new StringBuilder();
-    private Stack<MDToken<?>> tokens = new Stack<>();
+public final class MDCompiler {
+    private final StringBuilder collector = new StringBuilder();
+    private final Stack<MDToken<?>> tokens = new Stack<>();
+    private final String context;
 
-    public DSLCompiler() {
-
+    public MDCompiler(String context) {
+        this.context = context;
     }
 
     public static void main(String[] args) {
-        var compiler = new DSLCompiler();
-        compiler.toTokenStream("""
-                **bold text***italic text* [TextData](/command)
-                """.trim()).stream().forEach(System.out::println);
+        var compiler = new MDCompiler("""
+                **bold text***italic text* [TextData](/command) a [aTextData](/acommand)
+                """.trim());
+        compiler.toTokenStream().stream().forEach(System.out::println);
     }
 
-    private static String orDefault(String s1, String d) {
-        if (s1 == null || s1.isEmpty()) {
-            return d;
+    public Stack<MDToken<?>> toTokenStream() {
+        if (!tokens.empty()) {
+            return tokens;
         }
-        return s1;
-    }
-
-    public Stack<MDToken<?>> toTokenStream(String text) {
-        var chars = text.toCharArray();
+        var chars = context.toCharArray();
         var escape = false;
 
         boolean link = false;
@@ -90,7 +86,9 @@ public final class DSLCompiler {
                     if (link) {
                         var url = collector.toString();
                         collector.setLength(0);
-                        tokens.push(new Link(new LinkData(new DSLCompiler().toTokenStream(displayT), url)));
+                        tokens.push(new Link(new LinkData(new MDCompiler(displayT).toTokenStream(), url)));
+                        display = false;
+                        link = false;
                     } else {
                         collector.append(now);
                     }
@@ -122,11 +120,5 @@ public final class DSLCompiler {
             }
         }
         tokens.push(a);
-    }
-
-    private String getAndCleanResult() {
-        var result = collector.toString();
-        collector = new StringBuilder();
-        return result;
     }
 }
