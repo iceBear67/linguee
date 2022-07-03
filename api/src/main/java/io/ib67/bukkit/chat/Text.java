@@ -1,6 +1,8 @@
 package io.ib67.bukkit.chat;
 
 import io.ib67.bukkit.chat.action.client.ClientHoverAction;
+import io.ib67.bukkit.chat.theme.TextTheme;
+import io.ib67.bukkit.chat.theme.TextThemes;
 import io.ib67.bukkit.chatimpl.SpigotText;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.ChatColor;
@@ -40,7 +42,7 @@ public interface Text {
      * @return compiled text
      */
     static Text of(@NotNull String... text) {
-        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), true);
+        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), true, TextThemes.DEFAULT);
     }
 
     /**
@@ -50,7 +52,7 @@ public interface Text {
      * @return text
      */
     static Text ofRaw(@NotNull String... text) {
-        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), false);
+        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), false, TextThemes.DEFAULT);
     }
 
     /**
@@ -72,6 +74,14 @@ public interface Text {
     static Text ofLinesRaw(String... text) {
         return ofRaw(Arrays.stream(text).collect(Collectors.joining("\n")));
     }
+
+    /**
+     * Add a theme to the text.
+     *
+     * @param theme
+     * @return
+     */
+    Text withTheme(TextTheme theme);
 
     /**
      * Sets the action when clicking this text.
@@ -118,7 +128,7 @@ public interface Text {
      * @param placeholderMapper a function which maps placeholder names to value.
      * @return renderer result
      */
-    BaseComponent[] render(@NotNull Function<String, Object> placeholderMapper);
+    BaseComponent[] render(@NotNull TextTheme theme, @NotNull Function<String, Object> placeholderMapper);
 
     // OVERLOADS - CONCAT
 
