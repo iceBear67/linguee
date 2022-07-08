@@ -42,7 +42,7 @@ public interface Text {
      * @return compiled text
      */
     static Text of(@NotNull String... text) {
-        return new SpigotText(defaultColor, Arrays.stream(text).collect(Collectors.joining(" ")), true, TextThemes.DEFAULT);
+        return new SpigotText(null, Arrays.stream(text).collect(Collectors.joining(" ")), true, TextThemes.DEFAULT);
     }
 
     /**
@@ -52,7 +52,7 @@ public interface Text {
      * @return text
      */
     static Text ofRaw(@NotNull String... text) {
-        return new SpigotText(defaultColor, Arrays.stream(text).collect(Collectors.joining(" ")), false, TextThemes.DEFAULT);
+        return new SpigotText(null, Arrays.stream(text).collect(Collectors.joining(" ")), false, TextThemes.DEFAULT);
     }
 
     /**
