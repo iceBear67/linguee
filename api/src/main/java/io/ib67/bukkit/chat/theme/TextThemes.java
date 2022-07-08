@@ -1,7 +1,6 @@
 package io.ib67.bukkit.chat.theme;
 
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Color;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -31,6 +30,8 @@ public class TextThemes {
             ChatColor.DARK_PURPLE
     ));
 
-    public static TextTheme DEFAULT = ocean;
+    public static final TextTheme none = new EmptyTextTheme();
+
+    public static TextTheme DEFAULT = none;
 
 }

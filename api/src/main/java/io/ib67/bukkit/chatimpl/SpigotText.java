@@ -8,6 +8,7 @@ import io.ib67.bukkit.chat.theme.TextTheme;
 import io.ib67.bukkit.mcup.MDCompiler;
 import io.ib67.bukkit.mcup.MDToken;
 import io.ib67.bukkit.mcup.token.*;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -27,12 +28,14 @@ public class SpigotText implements Text {
     private static final Text ISOLATE_COLOR = Text.of("&r");
     private ClickAction clickAction;
     private ClientHoverAction<?> hoverAction;
+    private ChatColor defaultColor;
     private final List<Text> concatedTexts;
     private final String text;
     private final boolean compile;
     private final TextTheme theme;
 
-    SpigotText(SpigotText text, List<Text> concatedTexts, boolean compile, TextTheme theme) {
+    SpigotText(ChatColor defaultColor, SpigotText text, List<Text> concatedTexts, boolean compile, TextTheme theme) {
+        this.defaultColor = defaultColor;
         this.concatedTexts = concatedTexts;
         this.text = text.text;
         this.clickAction = text.clickAction;
@@ -41,7 +44,8 @@ public class SpigotText implements Text {
         this.theme = theme;
     }
 
-    public SpigotText(String text, boolean compile, TextTheme theme) {
+    public SpigotText(ChatColor defaultColor, String text, boolean compile, TextTheme theme) {
+        this.defaultColor = defaultColor;
         this.compile = compile;
         this.theme = theme;
         this.concatedTexts = new ArrayList<>();
@@ -49,8 +53,14 @@ public class SpigotText implements Text {
     }
 
     @Override
+    public Text withColor(ChatColor defaultColor) {
+        this.defaultColor = defaultColor;
+        return this;
+    }
+
+    @Override
     public Text withTheme(TextTheme theme) {
-        return new SpigotText(this, concatedTexts, compile, theme);
+        return new SpigotText(defaultColor, this, concatedTexts, compile, theme);
     }
 
     @Override
@@ -77,7 +87,7 @@ public class SpigotText implements Text {
             cText.add(ISOLATE_COLOR);
         }
         cText.add(anotherText);
-        return new SpigotText(this, cText, true, theme);
+        return new SpigotText(defaultColor, this, cText, true, theme);
     }
 
     @Override
@@ -131,6 +141,9 @@ public class SpigotText implements Text {
         var component = new TextComponent();
         component.setText(data);
         component = (TextComponent) theme.getTextFormatter().formatRegular(component);
+        if(defaultColor != null){
+            component.setColor(defaultColor);
+        }
         if(bold){
             component = (TextComponent) theme.getTextFormatter().formatBold(component);
         }

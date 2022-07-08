@@ -4,8 +4,8 @@ import io.ib67.bukkit.chat.action.client.ClientHoverAction;
 import io.ib67.bukkit.chat.theme.TextTheme;
 import io.ib67.bukkit.chat.theme.TextThemes;
 import io.ib67.bukkit.chatimpl.SpigotText;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,7 @@ public interface Text {
      * @return compiled text
      */
     static Text of(@NotNull String... text) {
-        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), true, TextThemes.DEFAULT);
+        return new SpigotText(defaultColor, Arrays.stream(text).collect(Collectors.joining(" ")), true, TextThemes.DEFAULT);
     }
 
     /**
@@ -52,7 +52,7 @@ public interface Text {
      * @return text
      */
     static Text ofRaw(@NotNull String... text) {
-        return new SpigotText(Arrays.stream(text).collect(Collectors.joining(" ")), false, TextThemes.DEFAULT);
+        return new SpigotText(defaultColor, Arrays.stream(text).collect(Collectors.joining(" ")), false, TextThemes.DEFAULT);
     }
 
     /**
@@ -74,6 +74,13 @@ public interface Text {
     static Text ofLinesRaw(String... text) {
         return ofRaw(Arrays.stream(text).collect(Collectors.joining("\n")));
     }
+
+    /**
+     * Set the default color of this text
+     * @param defaultColor default color
+     * @return
+     */
+    Text withColor(ChatColor defaultColor);
 
     /**
      * Add a theme to the text.
