@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 
 public class SpigotText implements Text {
     private static final Text SPACER = Text.of(" ");
@@ -91,7 +92,7 @@ public class SpigotText implements Text {
     }
 
     @Override
-    public void send(@NotNull CommandSender sender, @NotNull Function<String, Object> placeholderMapper, int delay) {
+    public void send(@NotNull CommandSender sender, @NotNull UnaryOperator<String> placeholderMapper, int delay) {
         // renderer.
         var components = new LinkedList<BaseComponent>();
         components.addAll(List.of(render(theme, placeholderMapper)));
@@ -101,12 +102,11 @@ public class SpigotText implements Text {
         sender.spigot().sendMessage(components.toArray(new BaseComponent[0]));
     }
 
-    @Override
-    public BaseComponent[] render(TextTheme theme, @NotNull Function<String, Object> placeholderMapper) {
+    public BaseComponent[] render(TextTheme theme, @NotNull UnaryOperator<String> placeholderMapper) {
         return new BaseComponent[]{render(new MDCompiler(text).toTokenStream(), placeholderMapper, theme)};
     }
 
-    private BaseComponent render(Stack<MDToken<?>> ts, @NotNull Function<String, Object> placeholderMapper, TextTheme theme) {
+    private BaseComponent render(Stack<MDToken<?>> ts, @NotNull UnaryOperator<String> placeholderMapper, TextTheme theme) {
         boolean italic = false;
         boolean bold = false;
         boolean quote = false;
@@ -128,7 +128,7 @@ public class SpigotText implements Text {
                 continue;
             }
             if (t instanceof Literal l) {
-                components.add(renderText(italic, bold, quote, l.getData(), theme));
+                components.add(renderText(italic, bold, quote, l.getData(), theme, placeholderMapper));
             }
         }
         return components.stream().reduce((a, b) -> {
@@ -137,17 +137,17 @@ public class SpigotText implements Text {
         }).orElseThrow();
     }
 
-    private BaseComponent renderText(boolean italic, boolean bold, boolean quote, String data, TextTheme theme) {
+    private BaseComponent renderText(boolean italic, boolean bold, boolean quote, String data, TextTheme theme, @NotNull UnaryOperator<String> placeholderMapper) {
         var component = new TextComponent();
         component.setText(data);
         component = (TextComponent) theme.getTextFormatter().formatRegular(component);
-        if(defaultColor != null){
+        if (defaultColor != null) {
             component.setColor(defaultColor);
         }
-        if(bold){
+        if (bold) {
             component = (TextComponent) theme.getTextFormatter().formatBold(component);
         }
-        if(italic || quote){
+        if (italic || quote) {
             component = (TextComponent) theme.getTextFormatter().formatItalic(component);
         }
         if (clickAction instanceof ClientClickAction s) {
@@ -167,5 +167,10 @@ public class SpigotText implements Text {
             component = (TextComponent) theme.getTextFormatter().formatActive(component);
         }
         return component;
+    }
+
+    @Override
+    public String str() {
+        return text;
     }
 }

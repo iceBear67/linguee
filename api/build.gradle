@@ -1,6 +1,8 @@
 plugins {
+    id 'java-library'
     id 'java'
 }
+apply plugin: "maven-publish"
 
 group 'io.ib67.bukkit'
 version '0.1.0'
@@ -15,4 +17,24 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+if (System.getProperty("user.name").equals("icybear")) {
+    publishing {
+        repositories {
+            maven {
+                name = "bukkit.rip"
+                url = uri("https://mvn.bukkit.rip/releases")
+                credentials {
+                    username = bkrip_user
+                    password = bkrip_token
+                }
+            }
+        }
+        publications {
+            ilrepo(MavenPublication) {
+                artifactId 'linguee'
+                from components.java
+            }
+        }
+    }
 }

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static org.inlambda.kiwi.Kiwi.todo;
@@ -127,7 +128,7 @@ public interface Text {
      * @throws IllegalArgumentException if there are some templates cannot be rendered correctly. usually caused by sending PAPI placeholders to console
      * @throws IllegalStateException    if texts are empty or some value is missing.
      */
-    void send(@NotNull CommandSender sender, @NotNull Function<String, Object> placeholderMapper, int delay);
+    void send(@NotNull CommandSender sender, @NotNull UnaryOperator<String> placeholderMapper, int delay);
 
     /**
      * Render the output.
@@ -135,7 +136,7 @@ public interface Text {
      * @param placeholderMapper a function which maps placeholder names to value.
      * @return renderer result
      */
-    BaseComponent[] render(@NotNull TextTheme theme, @NotNull Function<String, Object> placeholderMapper);
+    BaseComponent[] render(@NotNull TextTheme theme, @NotNull UnaryOperator<String> placeholderMapper);
 
     // OVERLOADS - CONCAT
 
@@ -209,9 +210,9 @@ public interface Text {
      * Send results to the audience with some defaults (delay: 0)
      *
      * @param audience          audience of the text
-     * @param placeholderMapper a function which maps placeholder names to value.
+     * @param placeholderMapper a function which maps placeholder names to value. {@link String} is expected for the value.
      */
-    default void send(@NotNull CommandSender audience, @NotNull Function<String, Object> placeholderMapper) {
+    default void send(@NotNull CommandSender audience, @NotNull UnaryOperator<String> placeholderMapper) {
         send(audience, placeholderMapper, 0);
     }
 
@@ -219,9 +220,9 @@ public interface Text {
      * Send results to the audience with some defaults (delay: 0)
      *
      * @param audience          audience of the text
-     * @param placeholderMapper a map
+     * @param placeholderMapper a map. {@link String} is expected for the value.
      */
-    default void send(@NotNull CommandSender audience, @NotNull Map<String, Object> placeholderMapper) {
+    default void send(@NotNull CommandSender audience, @NotNull Map<String, String> placeholderMapper) {
         send(audience, placeholderMapper::get, 0);
     }
 
