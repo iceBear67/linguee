@@ -1,6 +1,7 @@
 package io.ib67.bukkit.mcup;
 
 import io.ib67.bukkit.mcup.token.*;
+import net.md_5.bungee.api.ChatColor;
 import org.inlambda.kiwi.Stack;
 import org.inlambda.kiwi.collection.stack.ArrayOpenStack;
 import org.inlambda.kiwi.collection.stack.LinkedOpenStack;
@@ -16,8 +17,9 @@ public final class MDCompiler {
 
     public static void main(String[] args) {
         var compiler = new MDCompiler("""
-               **bold text***italic text* [TextData](/command) a [aTextData](/acommand) [Click here to learn about {{ player }} ](/lookup {{ player }})
-                """.trim());
+                **bold text***italic text* [TextData](/command) a [aTextData](/acommand) [Click here to learn about {{ player }} ](/lookup {{ player }}) &aaaa
+                &<1f1e33>色号
+                 """.trim());
         compiler.toTokenStream().stream().forEach(System.out::println);
     }
 
@@ -32,6 +34,7 @@ public final class MDCompiler {
         boolean display = false;
         String displayT = null;
 
+        boolean collectColor = false;
         for (int i = 0; i < chars.length; i++) {
             var now = chars[i];
             var hasNext = i < chars.length - 1;
@@ -39,26 +42,57 @@ public final class MDCompiler {
             var hasLast = i != 0;
             var last = hasLast ? chars[i - 1] : ' ';
 
-            var placeHolding = lastIs(Placeholder.BEGN,Placeholder.END);
+            var placeHolding = lastIs(Placeholder.BEGN, Placeholder.END);
             if (escape) {
                 collector.append(now);
                 continue;
             }
-            switch (now) {
-                case '\\':
-                    escape = true;
+            if (now == '\\') {
+                escape = true;
+                continue;
+            }
+            if (collectColor) {
+                if (now != '>') {
+                    collector.append(now);
                     continue;
-                case '{':
-                    if(display ){
+                } else {
+                    var color = ChatColor.of("#" + collector.toString());
+                    collector.setLength(0);
+                    tokens.push(new Color(color));
+                    continue;
+                }
+            }
+            switch (now) {
+                case '&':
+                    if (display) {
                         collector.append(now);
                         continue;
                     }
-                    if(hasNext && next == '{'){
-                        if(!placeHolding){
+                    if (hasNext) {
+                        saveLit();
+                        i++;
+                        var color = ChatColor.getByChar(next);
+                        if (color != null) {
+                            tokens.push(new Color(color));
+                            continue;
+                        } else if (next == '<') {
+                            collectColor = true;
+                            continue;
+                        }
+                    }
+                    collector.append(now);
+                    break;
+                case '{':
+                    if (display) {
+                        collector.append(now);
+                        continue;
+                    }
+                    if (hasNext && next == '{') {
+                        if (!placeHolding) {
                             i++;
                             saveLit();
                             tokens.push(Placeholder.BEGN);
-                        }else{
+                        } else {
                             collector.append(now);
                             continue;
                         }
@@ -69,12 +103,12 @@ public final class MDCompiler {
                         collector.append(now);
                         continue;
                     }
-                    if(hasNext && next == '}'){
-                        if(placeHolding){
+                    if (hasNext && next == '}') {
+                        if (placeHolding) {
                             i++;
                             saveLit();
                             tokens.push(Placeholder.END);
-                        }else{
+                        } else {
                             collector.append(now);
                             continue;
                         }
@@ -143,17 +177,18 @@ public final class MDCompiler {
         tokens.push(new Literal(lit));
     }
 
-    private boolean lastIs(MDToken<?> a, MDToken<?> b){
+    private boolean lastIs(MDToken<?> a, MDToken<?> b) {
         for (int i1 = tokens.size() - 1; i1 >= 0; i1--) {
             var tk = tokens.get(i1);
-            if(tk == a){
+            if (tk == a) {
                 return true;
-            }else if(tk==b){
+            } else if (tk == b) {
                 return false;
             }
         }
         return false;
     }
+
     private void lastOrPush(MDToken<?> a, MDToken<?> b) {
         for (int i1 = tokens.size() - 1; i1 >= 0; i1--) {
             var tk = tokens.get(i1);

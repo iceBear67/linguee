@@ -15,7 +15,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.inlambda.kiwi.Kiwi;
 import org.inlambda.kiwi.RandomHelper;
 import org.inlambda.kiwi.Stack;
 import org.jetbrains.annotations.NotNull;
@@ -105,22 +104,26 @@ public class SpigotText implements Text {
 
     @Override
     public BaseComponent[] render(@NotNull CommandSender sender, @NotNull TextTheme theme, @NotNull PlaceHolder placeholderMapper) {
-        return new BaseComponent[]{render(sender, new MDCompiler(text).toTokenStream(), placeholderMapper, theme)};
+        return new BaseComponent[]{render(sender, new MDCompiler(text).toTokenStream(), placeholderMapper, theme, defaultColor)};
     }
 
-    private BaseComponent render(CommandSender sender, Stack<MDToken<?>> ts, @NotNull PlaceHolder placeholderMapper, TextTheme theme) {
+    private BaseComponent render(CommandSender sender, Stack<MDToken<?>> ts, @NotNull PlaceHolder placeholderMapper, TextTheme theme, ChatColor defaultColor) {
         boolean italic = false;
         boolean bold = false;
         boolean quote = false;
         boolean placeholder = false;
+        ChatColor backColor = defaultColor;
         var components = new LinkedList<BaseComponent>();
         for (MDToken<?> t : ts.toList()) {
             if (t instanceof Bold) bold = t == Bold.BEGIN;
             if (t instanceof Italic) italic = t == Italic.BEGIN;
             if (t instanceof Quote) quote = t == Quote.BEGIN;
             if (t instanceof Placeholder) placeholder = t == Placeholder.BEGN;
+            if(t instanceof Color c){
+                backColor = c.getColor();
+            }
             if (t instanceof Link link) {
-                var component = render(sender, link.getData().display(), placeholderMapper, theme);
+                var component = render(sender, link.getData().display(), placeholderMapper, theme,backColor);
                 component = theme.getTextFormatter().formatLink(component);
                 var url = processUrl(sender, link.getData().url(), placeholderMapper);
                 if (url.startsWith("/")) {
@@ -132,13 +135,10 @@ public class SpigotText implements Text {
                 continue;
             }
             if (t instanceof Literal l) {
-                components.add(renderText(sender, italic, bold, quote, l.getData(), theme, placeholder, placeholderMapper));
+                components.add(renderText(sender, italic, bold, quote, l.getData(), theme, placeholder, placeholderMapper,backColor));
             }
         }
-        return components.stream().reduce((a, b) -> {
-            a.addExtra(b);
-            return a;
-        }).orElseThrow();
+        return new TextComponent(components.toArray(new BaseComponent[0]));
     }
 
     private String processUrl(CommandSender sender, Stack<MDToken<?>> url, PlaceHolder mapper) {
@@ -165,15 +165,16 @@ public class SpigotText implements Text {
                                      String data,
                                      TextTheme theme,
                                      boolean isPlaceholder,
-                                     @NotNull PlaceHolder placeholderMapper) {
+                                     @NotNull PlaceHolder placeholderMapper,
+                                     ChatColor backColor) {
         if (data.length() == 0) {
             return EMPTY;
         }
         var component = new TextComponent();
         component.setText(isPlaceholder ? orDefault(placeholderMapper.apply(sender, data.trim()), "{{ " + data + " }}") : data);
         component = (TextComponent) theme.getTextFormatter().formatRegular(component);
-        if (defaultColor != null) {
-            component.setColor(defaultColor);
+        if (backColor != null) {
+            component.setColor(backColor);
         }
         if (bold) {
             component = (TextComponent) theme.getTextFormatter().formatBold(component);

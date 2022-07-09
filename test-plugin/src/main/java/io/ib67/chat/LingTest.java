@@ -26,7 +26,7 @@ public class LingTest extends JavaPlugin implements Listener {
     }
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        text.send(event.getPlayer(), Papi.IT.and(this::myPlaceHolder));
+        Text.of(event.getMessage()).send(event.getPlayer(), Papi.IT.and(this::myPlaceHolder));
     }
 
     private String myPlaceHolder(CommandSender sender, String s) {
