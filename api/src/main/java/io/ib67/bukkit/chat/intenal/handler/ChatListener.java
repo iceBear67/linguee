@@ -1,7 +1,6 @@
 package io.ib67.bukkit.chat.intenal.handler;
 
-import io.ib67.bukkit.chat.intenal.Linguee;
-import org.bukkit.Bukkit;
+import io.ib67.bukkit.chat.Linguee;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

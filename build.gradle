@@ -11,7 +11,7 @@ allprojects {
             implementation "org.inlambda.kiwi:kiwi:0.3.0"
             implementation "org.inlambda.kiwi:collection:0.3.0"
             compileOnly 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
-            runtimeOnly 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
+            testRuntimeOnly 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
             compileOnly 'org.jetbrains:annotations:23.0.0'
         }
         repositories {

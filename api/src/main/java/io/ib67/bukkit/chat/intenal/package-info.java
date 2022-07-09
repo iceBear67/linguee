@@ -1,5 +1,5 @@
 /**
- * Classes in this package are used internally by the plugin. No support for external use.
+ * The library uses classes in this package internally. No support for external use.
  */
 @ApiStatus.Internal
 package io.ib67.bukkit.chat.intenal;

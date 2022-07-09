@@ -14,7 +14,7 @@ Linguee supports old-fashion chat color style in Minecraft.
 
 we also support operators like `gradient`.
 
-`&<gr:aqua-0xFFFF>Texts which are colored from aqua to red`
+`&<gr:aqua-0xFFFF>Texts which are colored from aqua to red` (gradient colors are not supported yet... but RGB Colors like `&<1f1e33>` have been supported..)
 
 ## In-Text DSL
 
@@ -29,27 +29,10 @@ supported.)
 
 ## Themed Texts
 
-With a themed text, you can focus on what you should emphasize to players instead of how do you organize colors.
+With a themed text, you can focus on what you should emphasize to players instead of how you organize colors.
 
 ``Use a `Sticky Wand` to attack them!`` -> `Use a &oSticky Wand&r to attack them!`
 -> `&bUse a &e&oSticky Wand&r&b to attack them!`
-
-## Localization
-
-type-safe localization so easy.
-
-```java
-import io.ib67.bukkit.chat.i10n.Localized;
-
-@Localized
-class MyLanguageRecord {
-    public final Text noItemRepresent;
-}
-
-//...
-
-assert record.noItemRepresent.str() == "There are no items.";
-```
 
 ## Templates
 
@@ -59,6 +42,6 @@ You can put placeholders into your texts, with pollution-proof
 
 ### Integrations
 
-Placeholder API is also available and you can inject your post-processors.
+Placeholder API is also available, and you can inject your post-processors.
 
 `Welcome back! {{papi:player_name}}` -> (With `{name = "nullcat_"}`) `Welcome back! nullcat_`

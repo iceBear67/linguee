@@ -16,33 +16,8 @@ final class EmptyTextTheme implements TextTheme {
 
     private class NoneTextFormatter implements TextFormatter {
         @Override
-        public BaseComponent formatItalic(BaseComponent components) {
+        public BaseComponent format(BaseComponent components, boolean italic, boolean bold, boolean quote, boolean placeholder, boolean link) {
             return components;
-        }
-
-        @Override
-        public BaseComponent formatActive(BaseComponent components) {
-            return components;
-        }
-
-        @Override
-        public BaseComponent formatBold(BaseComponent components) {
-            return components;
-        }
-
-        @Override
-        public BaseComponent formatRegular(BaseComponent components) {
-            return components;
-        }
-
-        @Override
-        public BaseComponent formatAccent(BaseComponent components) {
-            return components;
-        }
-
-        @Override
-        public BaseComponent formatLink(BaseComponent component) {
-            return component;
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.ib67.bukkit.chat.intenal;
 
 import io.ib67.bukkit.chat.ClickAction;
+import io.ib67.bukkit.chat.Linguee;
 import io.ib67.bukkit.chat.PlaceHolder;
 import io.ib67.bukkit.chat.Text;
 import io.ib67.bukkit.chat.action.client.ClientClickAction;
@@ -119,12 +120,12 @@ public class SpigotText implements Text {
             if (t instanceof Italic) italic = t == Italic.BEGIN;
             if (t instanceof Quote) quote = t == Quote.BEGIN;
             if (t instanceof Placeholder) placeholder = t == Placeholder.BEGN;
-            if(t instanceof Color c){
+            if (t instanceof Color c) {
                 backColor = c.getColor();
             }
             if (t instanceof Link link) {
-                var component = render(sender, link.getData().display(), placeholderMapper, theme,backColor);
-                component = theme.getTextFormatter().formatLink(component);
+                var component = render(sender, link.getData().display(), placeholderMapper, theme, backColor);
+                component = theme.getTextFormatter().format(component, italic, bold, quote, false, true);
                 var url = processUrl(sender, link.getData().url(), placeholderMapper);
                 if (url.startsWith("/")) {
                     component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, url));
@@ -135,7 +136,7 @@ public class SpigotText implements Text {
                 continue;
             }
             if (t instanceof Literal l) {
-                components.add(renderText(sender, italic, bold, quote, l.getData(), theme, placeholder, placeholderMapper,backColor));
+                components.add(renderText(sender, italic, bold, quote, l.getData(), theme, placeholder, placeholderMapper, backColor));
             }
         }
         return new TextComponent(components.toArray(new BaseComponent[0]));
@@ -172,15 +173,9 @@ public class SpigotText implements Text {
         }
         var component = new TextComponent();
         component.setText(isPlaceholder ? orDefault(placeholderMapper.apply(sender, data.trim()), "{{ " + data + " }}") : data);
-        component = (TextComponent) theme.getTextFormatter().formatRegular(component);
+        component = (TextComponent) theme.getTextFormatter().format(component, italic, bold, quote, isPlaceholder, false);
         if (backColor != null) {
             component.setColor(backColor);
-        }
-        if (bold) {
-            component = (TextComponent) theme.getTextFormatter().formatBold(component);
-        }
-        if (italic || quote) {
-            component = (TextComponent) theme.getTextFormatter().formatItalic(component);
         }
         if (clickAction instanceof ClientClickAction s) {
             ClickEvent.Action act = null;
@@ -196,7 +191,7 @@ public class SpigotText implements Text {
                 act = ClickEvent.Action.COPY_TO_CLIPBOARD;
             }
             component.setClickEvent(new ClickEvent(act, s.getValue()));
-            component = (TextComponent) theme.getTextFormatter().formatActive(component);
+            component = (TextComponent) theme.getTextFormatter().format(component, italic, bold, quote, isPlaceholder, true);
         } else if (clickAction != null) {
             var key = clickCallbackKey.computeIfAbsent(sender, s -> RandomHelper.string(32));
             var info = Linguee.getInstance().getCallbackInfo(key);

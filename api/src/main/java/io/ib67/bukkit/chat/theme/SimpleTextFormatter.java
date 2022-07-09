@@ -12,41 +12,21 @@ public class SimpleTextFormatter extends AbstractTextFormatter {
     }
 
     @Override
-    public BaseComponent formatItalic(BaseComponent components) {
-        return formatAccent(components);
-    }
-
-    @Override
-    public BaseComponent formatActive(BaseComponent components) {
-        components.setColor(colorPalette.reference());
+    public BaseComponent format(BaseComponent components, boolean italic, boolean bold, boolean quote, boolean placeholder, boolean link) {
+        if(italic){
+            components.setItalic(true);
+        }
+        if(bold){
+            components.setBold(true);
+        }
+        if(quote){
+            components.setColor(colorPalette.accent());
+        }
+        if(link){
+            components.setUnderlined(true);
+            components.setColor(colorPalette.reference());
+            components.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text("Click Me!")));
+        }
         return components;
-    }
-
-    @Override
-    public BaseComponent formatBold(BaseComponent components) {
-        components.setBold(true);
-        components.setColor(colorPalette.accent());
-        return components;
-    }
-
-    @Override
-    public BaseComponent formatRegular(BaseComponent components) {
-        components.setColor(colorPalette.primary());
-        return components;
-    }
-
-    @Override
-    public BaseComponent formatAccent(BaseComponent components) {
-        components.setColor(colorPalette.accent());
-        components.setItalic(true);
-        return components;
-    }
-
-    @Override
-    public BaseComponent formatLink(BaseComponent component) {
-        component.setUnderlined(true);
-        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText("Click Me!", ChatColor.WHITE))));
-        component.setColor(colorPalette.reference());
-        return component;
     }
 }

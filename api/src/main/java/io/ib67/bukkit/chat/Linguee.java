@@ -1,23 +1,19 @@
-package io.ib67.bukkit.chat.intenal;
+package io.ib67.bukkit.chat;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.ib67.bukkit.chat.ClickAction;
 import io.ib67.bukkit.chat.intenal.fakeplugin.LingueePlugin;
 import io.ib67.bukkit.chat.intenal.handler.ChatListener;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import org.inlambda.kiwi.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.time.Duration;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import static org.inlambda.kiwi.Kiwi.byLazy;
-import static org.inlambda.kiwi.Kiwi.pairOf;
 
 public final class Linguee {
     private static final Logger lingueeLogger = Logger.getLogger("Linguee");
@@ -64,15 +60,18 @@ public final class Linguee {
             .expireAfterWrite(Duration.ofMinutes(2))
             .build();
 
+    @ApiStatus.Internal
     public void registerCallback(String key, ClickAction action) {
         clickActions.put(key, action);
     }
 
+    @ApiStatus.Internal
     @Nullable
     public ClickAction getCallbackInfo(String key) {
         return clickActions.getIfPresent(key);
     }
 
+    @ApiStatus.Internal
     public void invalidateCallback(String key) {
         clickActions.invalidate(key);
     }
