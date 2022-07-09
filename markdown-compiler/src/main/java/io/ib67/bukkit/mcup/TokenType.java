@@ -9,5 +9,8 @@ public enum TokenType {
     ITALIC_END,
     QUOTE_BEGIN,
     QUOTE_END,
-    COLOR_BEGIN
+    COLOR_BEGIN,
+
+    PLACEHOLDER_BEGIN,
+    PLACEHOLDER_END
 }

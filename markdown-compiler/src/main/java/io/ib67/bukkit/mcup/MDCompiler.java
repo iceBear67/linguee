@@ -1,12 +1,13 @@
 package io.ib67.bukkit.mcup;
 
 import io.ib67.bukkit.mcup.token.*;
-
-import java.util.Stack;
+import org.inlambda.kiwi.Stack;
+import org.inlambda.kiwi.collection.stack.ArrayOpenStack;
+import org.inlambda.kiwi.collection.stack.LinkedOpenStack;
 
 public final class MDCompiler {
     private final StringBuilder collector = new StringBuilder();
-    private final Stack<MDToken<?>> tokens = new Stack<>();
+    private final Stack<MDToken<?>> tokens = new LinkedOpenStack<>();
     private final String context;
 
     public MDCompiler(String context) {
@@ -15,13 +16,13 @@ public final class MDCompiler {
 
     public static void main(String[] args) {
         var compiler = new MDCompiler("""
-                **bold text***italic text* [TextData](/command) a [aTextData](/acommand)
+               **bold text***italic text* [TextData](/command) a [aTextData](/acommand) [Click here to learn about {{ player }} ](/lookup {{ player }})
                 """.trim());
         compiler.toTokenStream().stream().forEach(System.out::println);
     }
 
     public Stack<MDToken<?>> toTokenStream() {
-        if (!tokens.empty()) {
+        if (!tokens.isEmpty()) {
             return tokens;
         }
         var chars = context.toCharArray();
@@ -30,12 +31,15 @@ public final class MDCompiler {
         boolean link = false;
         boolean display = false;
         String displayT = null;
+
         for (int i = 0; i < chars.length; i++) {
             var now = chars[i];
             var hasNext = i < chars.length - 1;
             var next = hasNext ? chars[i + 1] : ' ';
             var hasLast = i != 0;
             var last = hasLast ? chars[i - 1] : ' ';
+
+            var placeHolding = lastIs(Placeholder.BEGN,Placeholder.END);
             if (escape) {
                 collector.append(now);
                 continue;
@@ -44,8 +48,40 @@ public final class MDCompiler {
                 case '\\':
                     escape = true;
                     continue;
+                case '{':
+                    if(display ){
+                        collector.append(now);
+                        continue;
+                    }
+                    if(hasNext && next == '{'){
+                        if(!placeHolding){
+                            i++;
+                            saveLit();
+                            tokens.push(Placeholder.BEGN);
+                        }else{
+                            collector.append(now);
+                            continue;
+                        }
+                    }
+                    break;
+                case '}':
+                    if (display) {
+                        collector.append(now);
+                        continue;
+                    }
+                    if(hasNext && next == '}'){
+                        if(placeHolding){
+                            i++;
+                            saveLit();
+                            tokens.push(Placeholder.END);
+                        }else{
+                            collector.append(now);
+                            continue;
+                        }
+                    }
+                    break;
                 case '*':
-                    if (display || link) {
+                    if (display || link || placeHolding) {
                         collector.append(now);
                         continue;
                     }
@@ -60,7 +96,7 @@ public final class MDCompiler {
                     }
                     break;
                 case '[':
-                    if (display) {
+                    if (display || placeHolding) {
                         collector.append(now);
                     } else {
                         // suspect it.
@@ -86,7 +122,7 @@ public final class MDCompiler {
                     if (link) {
                         var url = collector.toString();
                         collector.setLength(0);
-                        tokens.push(new Link(new LinkData(new MDCompiler(displayT).toTokenStream(), url)));
+                        tokens.push(new Link(new LinkData(new MDCompiler(displayT).toTokenStream(), new MDCompiler(url).toTokenStream())));
                         display = false;
                         link = false;
                     } else {
@@ -107,6 +143,17 @@ public final class MDCompiler {
         tokens.push(new Literal(lit));
     }
 
+    private boolean lastIs(MDToken<?> a, MDToken<?> b){
+        for (int i1 = tokens.size() - 1; i1 >= 0; i1--) {
+            var tk = tokens.get(i1);
+            if(tk == a){
+                return true;
+            }else if(tk==b){
+                return false;
+            }
+        }
+        return false;
+    }
     private void lastOrPush(MDToken<?> a, MDToken<?> b) {
         for (int i1 = tokens.size() - 1; i1 >= 0; i1--) {
             var tk = tokens.get(i1);

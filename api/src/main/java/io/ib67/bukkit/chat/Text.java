@@ -3,7 +3,7 @@ package io.ib67.bukkit.chat;
 import io.ib67.bukkit.chat.action.client.ClientHoverAction;
 import io.ib67.bukkit.chat.theme.TextTheme;
 import io.ib67.bukkit.chat.theme.TextThemes;
-import io.ib67.bukkit.chatimpl.SpigotText;
+import io.ib67.bukkit.chat.intenal.SpigotText;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static org.inlambda.kiwi.Kiwi.todo;
@@ -78,6 +76,7 @@ public interface Text {
 
     /**
      * Set the default color of this text
+     *
      * @param defaultColor default color
      * @return
      */
@@ -128,7 +127,7 @@ public interface Text {
      * @throws IllegalArgumentException if there are some templates cannot be rendered correctly. usually caused by sending PAPI placeholders to console
      * @throws IllegalStateException    if texts are empty or some value is missing.
      */
-    void send(@NotNull CommandSender sender, @NotNull UnaryOperator<String> placeholderMapper, int delay);
+    void send(@NotNull CommandSender sender, @NotNull PlaceHolder placeholderMapper, int delay);
 
     /**
      * Render the output.
@@ -136,7 +135,7 @@ public interface Text {
      * @param placeholderMapper a function which maps placeholder names to value.
      * @return renderer result
      */
-    BaseComponent[] render(@NotNull TextTheme theme, @NotNull UnaryOperator<String> placeholderMapper);
+    BaseComponent[] render(@NotNull CommandSender sender, @NotNull TextTheme theme, @NotNull PlaceHolder placeholderMapper);
 
     // OVERLOADS - CONCAT
 
@@ -203,7 +202,7 @@ public interface Text {
      * @param audience audience of the text
      */
     default void send(@NotNull CommandSender audience) {
-        send(audience, any -> null, 0);
+        send(audience, (t, any) -> null, 0);
     }
 
     /**
@@ -212,7 +211,7 @@ public interface Text {
      * @param audience          audience of the text
      * @param placeholderMapper a function which maps placeholder names to value. {@link String} is expected for the value.
      */
-    default void send(@NotNull CommandSender audience, @NotNull UnaryOperator<String> placeholderMapper) {
+    default void send(@NotNull CommandSender audience, @NotNull PlaceHolder placeholderMapper) {
         send(audience, placeholderMapper, 0);
     }
 
@@ -223,7 +222,7 @@ public interface Text {
      * @param placeholderMapper a map. {@link String} is expected for the value.
      */
     default void send(@NotNull CommandSender audience, @NotNull Map<String, String> placeholderMapper) {
-        send(audience, placeholderMapper::get, 0);
+        send(audience, (t, s) -> placeholderMapper.get(s), 0);
     }
 
     /**
@@ -233,7 +232,7 @@ public interface Text {
      * @param delay
      */
     default void send(@NotNull CommandSender audience, int delay) {
-        send(audience, any -> null, delay);
+        send(audience, (t, any) -> null, delay);
     }
 
     /**

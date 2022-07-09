@@ -2,4 +2,5 @@ rootProject.name = 'chat'
 include 'api'
 include 'markdown-compiler'
 include 'test-plugin'
+include 'integration-papi'
 

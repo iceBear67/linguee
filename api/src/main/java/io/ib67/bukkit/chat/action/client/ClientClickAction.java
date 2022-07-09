@@ -13,7 +13,7 @@ public sealed abstract class ClientClickAction implements ClickAction {
     }
 
     @Override
-    public void onClick(Player sender) {
+    public boolean onClick(Player sender) {
         throw new AssertionError("This should not be called");
     }
 
