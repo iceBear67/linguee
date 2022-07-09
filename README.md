@@ -2,8 +2,6 @@
 
 [Text](./api/src/main/java/io/ib67/bukkit/chat/Text.java) solution which is alternative to Adventure API.
 
-Status: Beta (is going to be stable but needs more tests)
-
 ```java
 TextThemes.DEFAULT = TextThemes.worldguard; // set theme
 Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* mails, ") // papi and your custom placeholders...
@@ -17,6 +15,27 @@ Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* ma
 ```
 ![Image of the code](./dist/2022-07-09_19-53.png)
 
+# Getting Started
+```groovy
+repositories {
+    maven {
+        url "https://mvn.bukkit.rip/releases"
+    }   
+}
+def lingueeVersion = "0.2.0"
+dependencies {
+    implementation "io.ib67.bukkit:linguee:$lingueeVersion"
+    implementation "io.ib67.bukkit:linguee-integration-papi:$lingueeVersion" // if you wanna use placeholder api feature
+}
+shadowJar {
+    relocate 'io.ib67.bukkit.chat', 'your-package-name.linguee' // don't forget this
+}
+```
+
+And add this into your `onEnable`:
+```java
+Linguee.getInstance().init(this); // sets up the plugin for linguee to use for listeners & tasks
+```
 # Features
 
 Linguee has a lot of features that help you to deal with texts.

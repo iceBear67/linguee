@@ -1,5 +1,6 @@
 package io.ib67.chat;
 
+import io.ib67.bukkit.chat.Linguee;
 import io.ib67.bukkit.chat.Papi;
 import io.ib67.bukkit.chat.Text;
 import io.ib67.bukkit.chat.theme.TextThemes;
@@ -15,6 +16,7 @@ public class LingTest extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         TextThemes.DEFAULT = TextThemes.worldguard;
+        Linguee.getInstance().init(this);
         text = Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* mails, ") // papi and your custom placeholders...
                 .concat(
                         Text.of("[Click here](/kick {{papi:player_name}}) to check your mailbox.")

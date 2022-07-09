@@ -1,9 +1,10 @@
 plugins {
     id 'java'
 }
+apply plugin: 'maven-publish'
 
 group 'io.ib67.bukkit'
-version '0.1.0'
+version parent.version
 
 repositories {
     mavenCentral()
@@ -18,7 +19,28 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.2'
     compileOnly project(":api")
 }
-
+if (System.getProperty("user.name").equals("icybear")) {
+    publishing {
+        repositories {
+            maven {
+                name = "bukkit.rip"
+                url = uri("https://mvn.bukkit.rip/releases")
+                credentials {
+                    username = bkrip_user
+                    password = bkrip_token
+                }
+            }
+        }
+        publications {
+            ilrepo(MavenPublication) {
+                artifactId 'linguee-integration-papi'
+                from components.java
+                artifact sourceJar
+                artifact packageJavadoc
+            }
+        }
+    }
+}
 test {
     useJUnitPlatform()
 }

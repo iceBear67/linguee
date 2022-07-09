@@ -31,7 +31,7 @@ public final class Linguee {
     }
     // --------------------------------------------------------------------------------------------------------------------
     public Linguee() {
-        Bukkit.getPluginManager().registerEvents(new ChatListener(), getPlugin());
+
     }
     /**
      * The JavaPlugin instance to be used for registration of listeners and tasks.
@@ -46,6 +46,11 @@ public final class Linguee {
         plugin.getLogger().info("Using fake plugin for Linguee, undefined behavior may occur.");
         plugin.getLogger().info("Please set a plugin instance for Linguee by calling `Linguee.setPlugin`");
         return plugin;
+    }
+
+    public void init(Plugin plugin){
+        setPlugin(plugin);
+        Bukkit.getPluginManager().registerEvents(new ChatListener(), getPlugin());
     }
 
     public void setPlugin(Plugin plugin) {
