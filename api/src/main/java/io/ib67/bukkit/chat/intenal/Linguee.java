@@ -29,7 +29,7 @@ public final class Linguee {
     }
 
     static {
-        if (Linguee.class.getPackageName().equals("io.ib67.bukkit.chat")) {
+        if (Linguee.class.getPackageName().equals("io.ib67.bukkit.chat.internal")) {
             lingueeLogger.warning("Linguee is not relocated properly, undefined behaviours may occur.");
         }
     }
