@@ -2,6 +2,8 @@
 
 [Text](./api/src/main/java/io/ib67/bukkit/chat/Text.java) Processing solution which alternatives to Adventure API.
 
+Status: Beta (going to be stable but need more tests)
+
 ```java
 TextThemes.DEFAULT = TextThemes.worldguard; // set theme
 Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* mails, ") // papi and your custom placeholders...
