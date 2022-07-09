@@ -21,6 +21,7 @@ import org.inlambda.kiwi.Stack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class SpigotText implements Text {
     private static final Text SPACER = Text.of(" ");
@@ -94,9 +95,10 @@ public class SpigotText implements Text {
         // renderer.
         Bukkit.getScheduler().runTaskLater(Linguee.getInstance().getPlugin(), () -> {
             var components = new LinkedList<>(List.of(render(sender, theme, placeholderMapper)));
-            for (Text concatedText : concatedTexts) {
-                components.addAll(List.of(concatedText.render(sender, theme, placeholderMapper)));
-            }
+            components.addAll(concatedTexts.stream()
+                    .map(e -> e.render(sender, theme, placeholderMapper))
+                    .flatMap(Stream::of)
+                    .toList());
             sender.spigot().sendMessage(components.toArray(new BaseComponent[0]));
         }, Math.min(1, delay));
     }

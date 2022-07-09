@@ -17,11 +17,11 @@ public class LingTest extends JavaPlugin implements Listener {
         TextThemes.DEFAULT = TextThemes.worldguard;
         text = Text.of("Hello! *{{papi:player_name}}*, You have {{ mailcount }} mails, ") // papi and your custom placeholders...
                 .concat(
-                        Text.of("[Click Here](/mailbox) to check your mailbox.")
-                            /*    .withClickAction(sender -> {
+                        Text.of("[Click here](/mailbox) to check your mailbox.")
+                                .withClickAction(sender -> {
                                     sender.sendMessage("Please click the underlined text.");
                                     return true;
-                                })*/
+                                })
                 );
     }
     @EventHandler
