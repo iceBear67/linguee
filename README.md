@@ -1,8 +1,8 @@
 # Linguee
 
-[Text](./api/src/main/java/io/ib67/bukkit/chat/Text.java) Processing solution which alternatives to Adventure API.
+[Text](./api/src/main/java/io/ib67/bukkit/chat/Text.java) solution which is alternative to Adventure API.
 
-Status: Beta (going to be stable but need more tests)
+Status: Beta (is going to be stable but needs more tests)
 
 ```java
 TextThemes.DEFAULT = TextThemes.worldguard; // set theme
@@ -11,7 +11,7 @@ Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* ma
              Text.of("[Click here](/kick {{papi:player_name}}) to check your mailbox.") // markdown-like syntax is supported, like [display](URL/Command) and *italic*
                 .withClickAction(sender -> { // if the player clicks on the texts out of the "Click here"
                     Text.of("&cPlease click the underlined text, *don't click me!*").send(sender);
-                    return true; // Sets this handler to be expired, will no longer be called
+                    return true; // Sets this handler to expired and won't be called anymore.
                 })
         ).send(player,Papi.IT.and(this::processMailCount).and(...)); // send to player with placeholder settings.
 ```
@@ -29,7 +29,7 @@ Linguee supports old-fashion chat color style in Minecraft.
 
 we also support operators like `gradient`.
 
-`&<gr:aqua-0xFFFF>Texts which are colored from aqua to red` (gradient colors are not supported yet... but RGB Colors like `&<1f1e33>` have been supported..)
+`&<gr:aqua-0xFFFF>Texts which are colored from aqua to red` (gradient colors are not supported yet... but RGB Colors like `&<1f1e33>` are supported..)
 
 ## In-Text DSL
 
@@ -44,7 +44,7 @@ supported.)
 
 ## Themed Texts
 
-With a themed text, you can focus on what you should emphasize to players instead of how you organize colors.
+With a themed text, you can focus on what you want to emphasize to players instead of how to organize colors.
 
 ``Use a `Sticky Wand` to attack them!`` -> `Use a &oSticky Wand&r to attack them!`
 -> `&bUse a &e&oSticky Wand&r&b to attack them!`
