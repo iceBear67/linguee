@@ -15,18 +15,18 @@ public class LingTest extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         TextThemes.DEFAULT = TextThemes.worldguard;
-        text = Text.of("Hello! *{{papi:player_name}}*, You have {{ mailcount }} mails, ") // papi and your custom placeholders...
+        text = Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* mails, ") // papi and your custom placeholders...
                 .concat(
-                        Text.of("[Click here](/mailbox) to check your mailbox.")
+                        Text.of("[Click here](/kick {{papi:player_name}}) to check your mailbox.")
                                 .withClickAction(sender -> {
-                                    sender.sendMessage("Please click the underlined text.");
+                                    Text.of("&cPlease click the underlined text, *don't click me!*").send(sender);
                                     return true;
                                 })
                 );
     }
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        Text.of(event.getMessage()).send(event.getPlayer(), Papi.IT.and(this::myPlaceHolder));
+        text.send(event.getPlayer(),Papi.IT.and(this::myPlaceHolder));
     }
 
     private String myPlaceHolder(CommandSender sender, String s) {

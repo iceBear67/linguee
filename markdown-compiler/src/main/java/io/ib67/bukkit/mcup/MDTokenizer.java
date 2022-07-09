@@ -3,24 +3,15 @@ package io.ib67.bukkit.mcup;
 import io.ib67.bukkit.mcup.token.*;
 import net.md_5.bungee.api.ChatColor;
 import org.inlambda.kiwi.Stack;
-import org.inlambda.kiwi.collection.stack.ArrayOpenStack;
 import org.inlambda.kiwi.collection.stack.LinkedOpenStack;
 
-public final class MDCompiler {
+public final class MDTokenizer {
     private final StringBuilder collector = new StringBuilder();
     private final Stack<MDToken<?>> tokens = new LinkedOpenStack<>();
     private final String context;
 
-    public MDCompiler(String context) {
+    public MDTokenizer(String context) {
         this.context = context;
-    }
-
-    public static void main(String[] args) {
-        var compiler = new MDCompiler("""
-                **bold text***italic text* [TextData](/command) a [aTextData](/acommand) [Click here to learn about {{ player }} ](/lookup {{ player }}) &aaaa
-                &<1f1e33>色号
-                 """.trim());
-        compiler.toTokenStream().stream().forEach(System.out::println);
     }
 
     public Stack<MDToken<?>> toTokenStream() {
@@ -63,6 +54,14 @@ public final class MDCompiler {
                 }
             }
             switch (now) {
+                case '`':
+                    if(display){
+                        collector.append(now);
+                        continue;
+                    }
+                    saveLit();
+                    lastOrPush(Quote.BEGIN,Quote.END);
+                    break;
                 case '&':
                     if (display) {
                         collector.append(now);
@@ -156,7 +155,7 @@ public final class MDCompiler {
                     if (link) {
                         var url = collector.toString();
                         collector.setLength(0);
-                        tokens.push(new Link(new LinkData(new MDCompiler(displayT).toTokenStream(), new MDCompiler(url).toTokenStream())));
+                        tokens.push(new Link(new LinkData(new MDTokenizer(displayT).toTokenStream(), new MDTokenizer(url).toTokenStream())));
                         display = false;
                         link = false;
                     } else {
