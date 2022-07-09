@@ -13,19 +13,21 @@ public class SimpleTextFormatter extends AbstractTextFormatter {
 
     @Override
     public BaseComponent format(BaseComponent components, boolean italic, boolean bold, boolean quote, boolean placeholder, boolean link) {
+        components.setColor(colorPalette.primary());
         if(italic){
             components.setItalic(true);
-        }
-        if(bold){
-            components.setBold(true);
-        }
-        if(quote){
-            components.setColor(colorPalette.accent());
         }
         if(link){
             components.setUnderlined(true);
             components.setColor(colorPalette.reference());
             components.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new Text("Click Me!")));
+        }
+        if(bold){
+            components.setBold(true);
+            components.setColor(colorPalette.accent());
+        }
+        if(quote) {
+            components.setColor(colorPalette.accent());
         }
         return components;
     }

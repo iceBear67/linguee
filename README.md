@@ -2,6 +2,19 @@
 
 [Text](./api/src/main/java/io/ib67/bukkit/chat/Text.java) Processing solution which alternatives to Adventure API.
 
+```java
+TextThemes.DEFAULT = TextThemes.worldguard; // set theme
+Text.of("**Welcome Back!** `{{papi:player_name}}`, You have *{{ mailcount }}* mails, ") // papi and your custom placeholders...
+     .concat( // concatenating other texts.
+             Text.of("[Click here](/kick {{papi:player_name}}) to check your mailbox.") // markdown-like syntax is supported, like [display](URL/Command) and *italic*
+                .withClickAction(sender -> { // if the player clicks on the texts out of the "Click here"
+                    Text.of("&cPlease click the underlined text, *don't click me!*").send(sender);
+                    return true; // Sets this handler to be expired, will no longer be called
+                })
+        ).send(player,Papi.IT.and(this::processMailCount).and(...)); // send to player with placeholder settings.
+```
+![Image of the code](./dist/2022-07-09_19-53.png)
+
 # Features
 
 Linguee has a lot of features that help you to deal with texts.

@@ -7,7 +7,7 @@ import io.ib67.bukkit.chat.Text;
 import io.ib67.bukkit.chat.action.client.ClientClickAction;
 import io.ib67.bukkit.chat.action.client.ClientHoverAction;
 import io.ib67.bukkit.chat.theme.TextTheme;
-import io.ib67.bukkit.mcup.MDCompiler;
+import io.ib67.bukkit.mcup.MDTokenizer;
 import io.ib67.bukkit.mcup.MDToken;
 import io.ib67.bukkit.mcup.token.*;
 import net.md_5.bungee.api.ChatColor;
@@ -103,7 +103,7 @@ public class SpigotText implements Text {
 
     @Override
     public BaseComponent[] render(@NotNull CommandSender sender, @NotNull TextTheme theme, @NotNull PlaceHolder placeholderMapper) {
-        return new BaseComponent[]{render(sender, new MDCompiler(text).toTokenStream(), placeholderMapper, theme, defaultColor)};
+        return new BaseComponent[]{render(sender, new MDTokenizer(text).toTokenStream(), placeholderMapper, theme, defaultColor)};
     }
 
     private BaseComponent render(CommandSender sender, Stack<MDToken<?>> ts, @NotNull PlaceHolder placeholderMapper, TextTheme theme, ChatColor defaultColor) {
@@ -127,8 +127,10 @@ public class SpigotText implements Text {
                 var url = processUrl(sender, link.getData().url(), placeholderMapper);
                 if (url.startsWith("/")) {
                     component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, url));
+                    component.getExtra().forEach(e->e.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, url)));
                 } else {
                     component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                    component.getExtra().forEach(e->e.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
                 }
                 components.add(component);
                 continue;
@@ -148,7 +150,7 @@ public class SpigotText implements Text {
             if (mdToken == Placeholder.END) placeholder = false;
             var data = mdToken.getData();
             if (data instanceof String s) {
-                s = ChatColor.stripColor(s);
+                //s = ChatColor.stripColor(s);
                 sb.append(placeholder ? mapper.apply(sender, s.trim()) : s);
             }
         }
