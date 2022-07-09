@@ -14,7 +14,7 @@ final class EmptyTextTheme implements TextTheme {
         return new NoneTextFormatter();
     }
 
-    private class NoneTextFormatter implements TextFormatter {
+    private static class NoneTextFormatter implements TextFormatter {
         @Override
         public BaseComponent format(BaseComponent components, boolean italic, boolean bold, boolean quote, boolean placeholder, boolean link) {
             return components;

@@ -32,24 +32,22 @@ public class SpigotText implements Text {
     private ChatColor defaultColor;
     private final List<Text> concatedTexts;
     private final String text;
-    private final boolean compile;
     private final TextTheme theme;
 
-    private Map<CommandSender, String> clickCallbackKey = new WeakHashMap<>(Math.min(Bukkit.getMaxPlayers(), 32));
+    private final Map<CommandSender, String> clickCallbackKey = new WeakHashMap<>(Math.min(Bukkit.getMaxPlayers(), 32));
 
-    SpigotText(ChatColor defaultColor, SpigotText text, List<Text> concatedTexts, boolean compile, TextTheme theme) {
+    SpigotText(ChatColor defaultColor, SpigotText text, List<Text> concatedTexts,  TextTheme theme) {
         this.defaultColor = defaultColor;
         this.concatedTexts = concatedTexts;
         this.text = text.text;
         this.clickAction = text.clickAction;
         this.hoverAction = text.hoverAction;
-        this.compile = compile;
+
         this.theme = theme;
     }
 
-    public SpigotText(ChatColor defaultColor, String text, boolean compile, TextTheme theme) {
+    public SpigotText(ChatColor defaultColor, String text, TextTheme theme) {
         this.defaultColor = defaultColor;
-        this.compile = compile;
         this.theme = theme;
         this.concatedTexts = new ArrayList<>();
         this.text = text;
@@ -63,7 +61,7 @@ public class SpigotText implements Text {
 
     @Override
     public Text withTheme(TextTheme theme) {
-        return new SpigotText(defaultColor, this, concatedTexts, compile, theme);
+        return new SpigotText(defaultColor, this, concatedTexts,  theme);
     }
 
     @Override
@@ -87,7 +85,7 @@ public class SpigotText implements Text {
             cText.add(ISOLATE_COLOR);
         }
         cText.add(anotherText);
-        return new SpigotText(defaultColor, this, cText, true, theme);
+        return new SpigotText(defaultColor, this, cText, theme);
     }
 
     @Override

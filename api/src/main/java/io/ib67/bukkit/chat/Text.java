@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 import static org.inlambda.kiwi.Kiwi.todo;
 
 /**
- * Text is the core concept in Project Linguee, which represents an <strong>immutable (for text)</strong> object that holds information for player.<br>
+ * an <strong>immutable (for text itself, hover and handlers are not)</strong> object that holds information for player.<br>
  * <h1>## Compilation</h1><br>
- * Linguee Texts supports Built-In DSLs for expressive text representations. We will compile them when we're creating a Text.({@link #of(String...)})<br>
+ * Linguee Texts support Built-In DSLs for expressive text representations.
  * For further information, refer to online documentation.
  */
 @ApiStatus.AvailableSince("0.1.0")
@@ -41,7 +41,7 @@ public interface Text {
      * @return compiled text
      */
     static Text of(@NotNull String... text) {
-        return new SpigotText(null, Arrays.stream(text).collect(Collectors.joining(" ")), true, TextThemes.DEFAULT);
+        return new SpigotText(null, String.join(" ", text), TextThemes.DEFAULT);
     }
 
     /**
@@ -51,7 +51,7 @@ public interface Text {
      * @return text
      */
     static Text ofRaw(@NotNull String... text) {
-        return new SpigotText(null, Arrays.stream(text).collect(Collectors.joining(" ")), false, TextThemes.DEFAULT);
+        return new SpigotText(null, String.join(" ", text),TextThemes.DEFAULT);
     }
 
     /**
@@ -61,7 +61,7 @@ public interface Text {
      * @return compiled text
      */
     static Text ofLines(String... text) {
-        return of(Arrays.stream(text).collect(Collectors.joining("\n")));
+        return of(String.join("\n", text));
     }
 
     /**
@@ -71,7 +71,7 @@ public interface Text {
      * @return
      */
     static Text ofLinesRaw(String... text) {
-        return ofRaw(Arrays.stream(text).collect(Collectors.joining("\n")));
+        return ofRaw(String.join("\n", text));
     }
 
     /**
@@ -164,7 +164,7 @@ public interface Text {
      * {@link #concat(Text, boolean, boolean)} with string-convert
      *
      * @param anotherText  text to append
-     * @param withSpace    should we add a space between texts
+     * @param withSpace    should we add a space between texts?
      * @param isolateColor prevent text to be polluted by the color from this.
      * @return the combined text
      */
