@@ -13,12 +13,13 @@ public final class ChatListener implements Listener {
     public void onAsyncChat(PlayerCommandPreprocessEvent event) {
         var message = event.getMessage();
         if(message.startsWith("/linguee-handler ")){
+            event.setCancelled(true);
             message = message.replaceFirst("/linguee-handler ","");
             var info = Linguee.getInstance().getCallbackInfo(message);
             if (info == null) {
+                //todo: Should we tell player that it is expired?
                 return;
             }
-            event.setCancelled(true);
             var result = info.onClick(event.getPlayer());
             if (result) Linguee.getInstance().invalidateCallback(message);
         }
